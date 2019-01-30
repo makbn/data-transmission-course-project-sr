@@ -1,0 +1,49 @@
+server:
+  port: ${PORT:8761}
+
+
+eureka:         #tells about the Eureka server details and its refresh time
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 2
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+    healthcheck:
+      enabled: true
+    lease:
+      duration: 5
+
+spring:
+  application:
+    name: notify-service   #current service name to be used by the eureka server
+
+management:
+  security:
+    enabled: false  #disable the spring security on the management endpoints like /env, /refresh etc.
+
+    # دلیل خطوط 6 و 7
+#    TransportException: Cannot execute request on any known server
+#    While running Eureka server we often run into exceptions like:
+#
+#    1
+#    com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+#    Basically, this happens due to the wrong configuration in application.properties or application.yml. Eureka provides two properties for the client that can be configurable.
+#
+#    registerWithEureka: If we make this property as true then while the server starts the inbuilt client will try to register itself with the Eureka server.
+#    fetchRegistry: The inbuilt client will try to fetch the Eureka registry if we configure this property as true.
+#    Now when we start up the Eureka server, we don’t want to register the inbuilt client to configure itself with the server.
+#
+#    If we mark the above properties as true (or don’t configure them as they’re true by default) while starting the server, the inbuilt client tries to register itself with the Eureka server and also tries to fetch registry which is not yet available. As a result, we get TransportException.
+#
+#    So we should never configure these properties as true in the Eureka server applications. The correct settings that should be put in application.yml are given below:
+#
+#    1
+#    2
+#    3
+#    4
+#    eureka:
+#      client:
+#        registerWithEureka: false
+#        fetchRegistry: false
+#
